@@ -10,6 +10,7 @@ pub struct UiConfig {
     np_panel: Handle<NP>,
     tex_button: Handle<Texture>,
     np_button: Handle<NP>,
+    textstyle: TextStyle,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -22,10 +23,12 @@ enum UiContentZone {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum UiPanelId {
     SrvConnError,
+    LobbyMenu,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum UiButtonId {
+    ReadyPlayer,
     QuitGame,
 }
 
@@ -150,11 +153,16 @@ fn setup(
         NinePatchBuilder::by_margins(10.0, 10.0, 10.0, 10.0, UiContentZone::ButtonInner)
     );
 
-    let uicfg = UiConfig {
-        font, tex_panel, np_panel, tex_button, np_button,
+    let textstyle = TextStyle {
+        font_size: 16.0,
+        color: Color::WHITE,
     };
 
-    spawn_ui(&mut commands, &uicfg, UiId::Panel(UiPanelId::SrvConnError));
+    let uicfg = UiConfig {
+        font, tex_panel, np_panel, tex_button, np_button, textstyle
+    };
+
+    spawn_ui(&mut commands, &uicfg, UiId::Panel(UiPanelId::LobbyMenu));
     commands.insert_resource(uicfg);
 
     commands.spawn(UiCameraComponents::default());
@@ -169,7 +177,7 @@ pub fn spawn_ui(commands: &mut Commands, cfg: &UiConfig, ui: UiId) -> Entity {
                     texture: cfg.tex_panel,
                     ..Default::default()
                 },
-                nine_patch_size: NinePatchSize(Vec2::new(256.0, 128.0)),
+                nine_patch_size: NinePatchSize(Vec2::new(420.0, 420.0)),
                 ..Default::default()
             }).with(ui).current_entity().unwrap()
         }
@@ -184,6 +192,17 @@ pub fn spawn_ui(commands: &mut Commands, cfg: &UiConfig, ui: UiId) -> Entity {
             }).with(ui).current_entity().unwrap()
         }
     }
+}
+
+fn spawn_text(commands: &mut Commands, cfg: &UiConfig, value: &str) -> Entity {
+    commands.spawn(TextComponents {
+        text: Text {
+            value: value.to_string(),
+            font: cfg.font,
+            style: cfg.textstyle.clone(),
+        },
+        ..Default::default()
+    }).current_entity().unwrap()
 }
 
 fn ui_content_provider(
@@ -202,43 +221,39 @@ fn ui_content_provider(
 
         let e_content = match (*ui_id, content.content) {
             (UiId::Panel(UiPanelId::SrvConnError), UiContentZone::PanelTitle) => {
-                commands.spawn(TextComponents {
-                    text: Text {
-                        value: "Connection Error".to_string(),
-                        font: cfg.font,
-                        style: TextStyle {
-                            font_size: 16.0,
-                            color: Color::WHITE,
-                        },
-                    },
-                    ..Default::default()
-                }).current_entity().unwrap()
+                spawn_text(&mut commands, &cfg, "Connection Error")
             },
             (UiId::Panel(UiPanelId::SrvConnError), UiContentZone::PanelInner) => {
-                commands.spawn(TextComponents {
-                    text: Text {
-                        value: "Failed to connect to server.".to_string(),
-                        font: cfg.font,
-                        style: TextStyle {
-                            font_size: 16.0,
-                            color: Color::WHITE,
-                        },
+                spawn_text(&mut commands, &cfg, "Failed to connect to server.")
+            },
+            (UiId::Panel(UiPanelId::LobbyMenu), UiContentZone::PanelTitle) => {
+                spawn_text(&mut commands, &cfg, "Game Lobby")
+            },
+            (UiId::Panel(UiPanelId::LobbyMenu), UiContentZone::PanelInner) => {
+                let e = commands.spawn(NodeComponents {
+                    style: Style {
+                        margin: Rect::all(Val::Auto),
+                        flex_direction: FlexDirection::Column,
+                        ..Default::default()
                     },
                     ..Default::default()
-                }).current_entity().unwrap()
+                }).current_entity().unwrap();
+
+                let btn_ready = spawn_ui(&mut commands, &cfg, UiId::Button(UiButtonId::ReadyPlayer));
+                let btn_quit = spawn_ui(&mut commands, &cfg, UiId::Button(UiButtonId::QuitGame));
+
+                commands.push_children(e, &[
+                    btn_ready,
+                    btn_quit,
+                ]);
+
+                e
+            },
+            (UiId::Button(UiButtonId::ReadyPlayer), UiContentZone::ButtonInner) => {
+                spawn_text(&mut commands, &cfg, "Ready to play!")
             },
             (UiId::Button(UiButtonId::QuitGame), UiContentZone::ButtonInner) => {
-                commands.spawn(TextComponents {
-                    text: Text {
-                        value: "Quit Game".to_string(),
-                        font: cfg.font,
-                        style: TextStyle {
-                            font_size: 16.0,
-                            color: Color::WHITE,
-                        },
-                    },
-                    ..Default::default()
-                }).current_entity().unwrap()
+                spawn_text(&mut commands, &cfg, "Quit Game")
             },
             _ => {
                 panic!("unknown UI zone");
