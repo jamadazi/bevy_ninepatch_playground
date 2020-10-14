@@ -29,6 +29,7 @@ pub enum UiPanelId {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum UiButtonId {
     ReadyPlayer,
+    ReadySpectator,
     QuitGame,
 }
 
@@ -51,98 +52,72 @@ fn setup(
     let patches_panel = vec![
         vec![
             Patch {
-                width: PatchSize::Absolute(16.0),
-                height: PatchSize::Absolute(16.0),
-                x_growth: GrowthMode::None,
-                y_growth: GrowthMode::None,
+                original_size: Size::new(16, 16),
+                target_size: Size::new(Val::Undefined, Val::Undefined),
                 content: None,
             },
             Patch {
-                width: PatchSize::Absolute(1.0),
-                height: PatchSize::Absolute(16.0),
-                x_growth: GrowthMode::StretchRatio(1.0),
-                y_growth: GrowthMode::None,
+                original_size: Size::new(1, 16),
+                target_size: Size::new(Val::Percent(100.0), Val::Undefined),
                 content: None,
             },
             Patch {
-                width: PatchSize::Absolute(16.0),
-                height: PatchSize::Absolute(16.0),
-                x_growth: GrowthMode::None,
-                y_growth: GrowthMode::None,
+                original_size: Size::new(16, 16),
+                target_size: Size::new(Val::Undefined, Val::Undefined),
                 content: None,
             },
             Patch {
-                width: PatchSize::Absolute(2.0),
-                height: PatchSize::Absolute(16.0),
-                x_growth: GrowthMode::StretchRatio(0.0),
-                y_growth: GrowthMode::None,
+                original_size: Size::new(2, 16),
+                target_size: Size::new(Val::Percent(0.0), Val::Undefined),
                 content: Some(UiContentZone::PanelTitle),
             },
             Patch {
-                width: PatchSize::Absolute(16.0),
-                height: PatchSize::Absolute(16.0),
-                x_growth: GrowthMode::None,
-                y_growth: GrowthMode::None,
+                original_size: Size::new(16, 16),
+                target_size: Size::new(Val::Undefined, Val::Undefined),
                 content: None,
             },
             Patch {
-                width: PatchSize::Absolute(1.0),
-                height: PatchSize::Absolute(16.0),
-                x_growth: GrowthMode::StretchRatio(1.0),
-                y_growth: GrowthMode::None,
+                original_size: Size::new(1, 16),
+                target_size: Size::new(Val::Percent(100.0), Val::Undefined),
                 content: None,
             },
             Patch {
-                width: PatchSize::Absolute(16.0),
-                height: PatchSize::Absolute(16.0),
-                x_growth: GrowthMode::None,
-                y_growth: GrowthMode::None,
+                original_size: Size::new(16, 16),
+                target_size: Size::new(Val::Undefined, Val::Undefined),
                 content: None,
             },
         ],
         vec![
             Patch {
-                width: PatchSize::Absolute(16.0),
-                height: PatchSize::Absolute(1.0),
-                x_growth: GrowthMode::None,
-                y_growth: GrowthMode::StretchRatio(1.0),
+                original_size: Size::new(16, 1),
+                target_size: Size::new(Val::Undefined, Val::Percent(100.0)),
                 content: None,
             },
             Patch {
-                width: PatchSize::Absolute(36.0),
-                height: PatchSize::Absolute(1.0),
-                x_growth: GrowthMode::StretchRatio(1.0),
-                y_growth: GrowthMode::StretchRatio(1.0),
+                original_size: Size::new(36, 1),
+                target_size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
                 content: Some(UiContentZone::PanelInner),
             },
             Patch {
-                width: PatchSize::Absolute(16.0),
-                height: PatchSize::Absolute(1.0),
-                x_growth: GrowthMode::None,
-                y_growth: GrowthMode::StretchRatio(1.0),
+                original_size: Size::new(16, 1),
+                target_size: Size::new(Val::Undefined, Val::Percent(100.0)),
                 content: None,
             },
         ],
         vec![
             Patch {
-                width: PatchSize::Absolute(16.0),
-                height: PatchSize::Absolute(16.0),
-                x_growth: GrowthMode::None,
-                y_growth: GrowthMode::None,
+                original_size: Size::new(16, 16),
+                target_size: Size::new(Val::Undefined, Val::Undefined),
                 content: None,
             },
             Patch {
-                width: PatchSize::Absolute(36.0),
-                height: PatchSize::Absolute(16.0),
-                x_growth: GrowthMode::StretchRatio(1.0),
-                y_growth: GrowthMode::None,
+                original_size: Size::new(36, 16),
+                target_size: Size::new(Val::Percent(100.0), Val::Undefined),
                 content: None,
             },
             Patch {
-                width: PatchSize::Absolute(16.0),
-                height: PatchSize::Absolute(16.0),
-                x_growth: GrowthMode::None,
-                y_growth: GrowthMode::None,
+                original_size: Size::new(16, 16),
+                target_size: Size::new(Val::Undefined, Val::Undefined),
                 content: None,
             },
         ],
@@ -150,8 +125,7 @@ fn setup(
 
     let np_panel = nine_patches.add(NinePatchBuilder::from_patches(patches_panel));
     let np_button = nine_patches.add(
-        NinePatchBuilder::by_margins(10.0, 10.0, 10.0, 10.0, UiContentZone::ButtonInner)
-        //NinePatchBuilder::by_margins(5.0, 10.0, 6.0, 6.0, UiContentZone::ButtonInner)
+        NinePatchBuilder::by_margins(10, 10, 10, 10, UiContentZone::ButtonInner)
     );
 
     let textstyle = TextStyle {
@@ -180,9 +154,7 @@ pub fn spawn_ui(commands: &mut Commands, cfg: &UiConfig, ui: UiId) -> Entity {
                     margin: Rect::all(Val::Auto),
                     justify_content: JustifyContent::Center,
                     align_items: AlignItems::Center,
-                    size: Size::new(Val::Px(420.0), Val::Px(240.0)),
-                    //this doesn't work
-                    //size: Size::new(Val::Auto, Val::Auto),
+                    size: Size::new(Val::Auto, Val::Auto),
                     ..Default::default()
                 },
                 nine_patch_data: NinePatchData {
@@ -196,12 +168,10 @@ pub fn spawn_ui(commands: &mut Commands, cfg: &UiConfig, ui: UiId) -> Entity {
         UiId::Button(_) => {
             commands.spawn(NinePatchComponents {
                 style: Style {
-                    margin: Rect::all(Val::Auto),
+                    //margin: Rect::all(Val::Auto),
                     justify_content: JustifyContent::Center,
                     align_items: AlignItems::Center,
-                    size: Size::new(Val::Px(128.0), Val::Px(48.0)),
-                    //this doesn't work
-                    //size: Size::new(Val::Auto, Val::Auto),
+                    size: Size::new(Val::Auto, Val::Auto),
                     ..Default::default()
                 },
                 nine_patch_data: NinePatchData {
@@ -217,14 +187,6 @@ pub fn spawn_ui(commands: &mut Commands, cfg: &UiConfig, ui: UiId) -> Entity {
 
 fn spawn_text(commands: &mut Commands, cfg: &UiConfig, value: &str) -> Entity {
     commands.spawn(TextComponents {
-        /*
-        style: Style {
-            margin: Rect::all(Val::Auto),
-            justify_content: JustifyContent::Center,
-            align_items: AlignItems::Center,
-            ..Default::default()
-        },
-        */
         text: Text {
             value: value.to_string(),
             font: cfg.font,
@@ -268,18 +230,23 @@ fn ui_content_provider(
                     ..Default::default()
                 }).current_entity().unwrap();
 
-                let btn_ready = spawn_ui(&mut commands, &cfg, UiId::Button(UiButtonId::ReadyPlayer));
+                let btn_player = spawn_ui(&mut commands, &cfg, UiId::Button(UiButtonId::ReadyPlayer));
+                let btn_spect = spawn_ui(&mut commands, &cfg, UiId::Button(UiButtonId::ReadySpectator));
                 let btn_quit = spawn_ui(&mut commands, &cfg, UiId::Button(UiButtonId::QuitGame));
 
                 commands.push_children(e, &[
                     btn_quit,
-                    btn_ready,
+                    btn_spect,
+                    btn_player,
                 ]);
 
                 e
             },
             (UiId::Button(UiButtonId::ReadyPlayer), UiContentZone::ButtonInner) => {
                 spawn_text(&mut commands, &cfg, "Ready to play!")
+            },
+            (UiId::Button(UiButtonId::ReadySpectator), UiContentZone::ButtonInner) => {
+                spawn_text(&mut commands, &cfg, "Spectate")
             },
             (UiId::Button(UiButtonId::QuitGame), UiContentZone::ButtonInner) => {
                 spawn_text(&mut commands, &cfg, "Quit Game")
