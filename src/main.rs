@@ -151,6 +151,7 @@ fn setup(
     let np_panel = nine_patches.add(NinePatchBuilder::from_patches(patches_panel));
     let np_button = nine_patches.add(
         NinePatchBuilder::by_margins(10.0, 10.0, 10.0, 10.0, UiContentZone::ButtonInner)
+        //NinePatchBuilder::by_margins(5.0, 10.0, 6.0, 6.0, UiContentZone::ButtonInner)
     );
 
     let textstyle = TextStyle {
@@ -162,7 +163,10 @@ fn setup(
         font, tex_panel, np_panel, tex_button, np_button, textstyle
     };
 
+    //spawn_ui(&mut commands, &uicfg, UiId::Button(UiButtonId::QuitGame));
+    //spawn_ui(&mut commands, &uicfg, UiId::Panel(UiPanelId::SrvConnError));
     spawn_ui(&mut commands, &uicfg, UiId::Panel(UiPanelId::LobbyMenu));
+
     commands.insert_resource(uicfg);
 
     commands.spawn(UiCameraComponents::default());
@@ -172,17 +176,34 @@ pub fn spawn_ui(commands: &mut Commands, cfg: &UiConfig, ui: UiId) -> Entity {
     match ui {
         UiId::Panel(_) => {
             commands.spawn(NinePatchComponents {
+                style: Style {
+                    margin: Rect::all(Val::Auto),
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
+                    size: Size::new(Val::Px(420.0), Val::Px(240.0)),
+                    //this doesn't work
+                    //size: Size::new(Val::Auto, Val::Auto),
+                    ..Default::default()
+                },
                 nine_patch_data: NinePatchData {
                     nine_patch: cfg.np_panel,
                     texture: cfg.tex_panel,
                     ..Default::default()
                 },
-                nine_patch_size: NinePatchSize(Vec2::new(420.0, 420.0)),
                 ..Default::default()
             }).with(ui).current_entity().unwrap()
         }
         UiId::Button(_) => {
             commands.spawn(NinePatchComponents {
+                style: Style {
+                    margin: Rect::all(Val::Auto),
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
+                    size: Size::new(Val::Px(128.0), Val::Px(48.0)),
+                    //this doesn't work
+                    //size: Size::new(Val::Auto, Val::Auto),
+                    ..Default::default()
+                },
                 nine_patch_data: NinePatchData {
                     nine_patch: cfg.np_button,
                     texture: cfg.tex_button,
@@ -196,6 +217,14 @@ pub fn spawn_ui(commands: &mut Commands, cfg: &UiConfig, ui: UiId) -> Entity {
 
 fn spawn_text(commands: &mut Commands, cfg: &UiConfig, value: &str) -> Entity {
     commands.spawn(TextComponents {
+        /*
+        style: Style {
+            margin: Rect::all(Val::Auto),
+            justify_content: JustifyContent::Center,
+            align_items: AlignItems::Center,
+            ..Default::default()
+        },
+        */
         text: Text {
             value: value.to_string(),
             font: cfg.font,
@@ -243,8 +272,8 @@ fn ui_content_provider(
                 let btn_quit = spawn_ui(&mut commands, &cfg, UiId::Button(UiButtonId::QuitGame));
 
                 commands.push_children(e, &[
-                    btn_ready,
                     btn_quit,
+                    btn_ready,
                 ]);
 
                 e

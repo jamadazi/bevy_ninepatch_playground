@@ -131,12 +131,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "atom"
-version = "0.3.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c9ff149ed9780025acfdb36862d35b28856bb693ceb451259a7164442f22fdc3"
-
-[[package]]
 name = "autocfg"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -389,7 +383,7 @@ dependencies = [
 [[package]]
 name = "bevy_ninepatch"
 version = "0.1.3"
-source = "git+https://github.com/mockersf/bevy_extra.git#bacece76ba38c36b031f3844b477378a8f3f3118"
+source = "git+https://github.com/mockersf/bevy_extra.git#0032ae0c80c640841e076a75fdae669379e62837"
 dependencies = [
  "bevy",
  "rand",
@@ -1482,13 +1476,12 @@ dependencies = [
 
 [[package]]
 name = "gfx-memory"
-version = "0.2.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fe8d8855df07f438eb8a765e90356d5b821d644ea3b59b870091450b89576a9f"
+checksum = "90be4ce03ce6ecbd01e09e623b79b595574657be659fe2e229bb15a2c1c41038"
 dependencies = [
  "fxhash",
  "gfx-hal",
- "hibitset",
  "log",
  "slab",
 ]
@@ -1609,15 +1602,6 @@ checksum = "00ad921775e70efb68429688766ca130de39af65d5201db760b0e6558bfa8175"
 dependencies = [
  "glam",
  "lazy_static",
-]
-
-[[package]]
-name = "hibitset"
-version = "0.6.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "93a1bb8316a44459a7d14253c4d28dd7395cbd23cc04a68c46e851b8e46d64b1"
-dependencies = [
- "atom",
 ]
 
 [[package]]
