@@ -187,6 +187,13 @@ pub fn spawn_ui(commands: &mut Commands, cfg: &UiConfig, ui: UiId) -> Entity {
 
 fn spawn_text(commands: &mut Commands, cfg: &UiConfig, value: &str) -> Entity {
     commands.spawn(TextComponents {
+        style: Style {
+            size: Size{
+                height: Val::Px(cfg.textstyle.font_size),
+                ..Default::default()
+            },
+            ..Default::default()
+        },
         text: Text {
             value: value.to_string(),
             font: cfg.font,
